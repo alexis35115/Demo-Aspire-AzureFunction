@@ -1,6 +1,6 @@
 using Microsoft.Data.SqlClient;
 
-internal class Program
+internal sealed class Program
 {
     private const string CreateTableSql = @"IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Communication]') AND type in (N'U'))
 BEGIN
@@ -30,7 +30,7 @@ END";
             await using var cmd = new SqlCommand(CreateTableSql, conn);
             await cmd.ExecuteNonQueryAsync();
 
-            Console.WriteLine("Database migration completed (Communication table ensured).");
+            await Console.Out.WriteLineAsync("Database migration completed (Communication table ensured).");
             return 0;
         }
         catch (Exception ex)

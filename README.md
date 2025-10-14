@@ -25,7 +25,6 @@ reboot vs
 
 À tester : 
 
-- Se connecter à une BD
 - Ajouter des essais unitaires et d'intégration
 - Changer la structure du projet pour utiliser /src et /tests
-- Ajouter Editorconfig
+- procédure d'accès à bd

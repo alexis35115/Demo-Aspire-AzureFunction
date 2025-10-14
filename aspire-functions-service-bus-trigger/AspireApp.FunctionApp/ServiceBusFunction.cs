@@ -3,9 +3,28 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Text.Json;
 
 namespace AspireApp.FunctionApp;
+
+internal static partial class ServiceBusFunctionLog
+{
+    [LoggerMessage(EventId = 1000, Level = LogLevel.Warning, Message = "Received message with empty body")]
+    public static partial void ReceivedMessageWithEmptyBody(ILogger logger);
+
+    [LoggerMessage(EventId = 1001, Level = LogLevel.Warning, Message = "Failed to deserialize message body to Communication")]
+    public static partial void FailedToDeserialize(ILogger logger);
+
+    [LoggerMessage(EventId = 1002, Level = LogLevel.Error, Message = "Connection string 'Communication' not found")]
+    public static partial void MissingConnectionString(ILogger logger);
+
+    [LoggerMessage(EventId = 1003, Level = LogLevel.Information, Message = "Inserted Communication {Id} of type {Type}")]
+    public static partial void InsertedCommunication(ILogger logger, Guid id, string type);
+
+    [LoggerMessage(EventId = 1004, Level = LogLevel.Error, Message = "Error handling Service Bus message")]
+    public static partial void ErrorHandling(ILogger logger, Exception exception);
+}
 
 public class ServiceBusFunction
 {
@@ -30,7 +49,7 @@ public class ServiceBusFunction
         {
             if (message.Body == null)
             {
-                _logger.LogWarning("Received message with empty body");
+                ServiceBusFunctionLog.ReceivedMessageWithEmptyBody(_logger);
                 await messageActions.AbandonMessageAsync(message);
                 return;
             }
@@ -38,7 +57,7 @@ public class ServiceBusFunction
             var comm = JsonSerializer.Deserialize<Communication>(message.Body);
             if (comm is null)
             {
-                _logger.LogWarning("Failed to deserialize message body to Communication");
+                ServiceBusFunctionLog.FailedToDeserialize(_logger);
                 var props = new Dictionary<string, object>
                 {
                     ["DeadLetterReason"] = "DeserializationFailed",
@@ -52,19 +71,19 @@ public class ServiceBusFunction
             var connectionString = _configuration.GetConnectionString("Communication");
             if (string.IsNullOrWhiteSpace(connectionString))
             {
-                _logger.LogError("Connection string 'Communication' not found");
+                ServiceBusFunctionLog.MissingConnectionString(_logger);
                 await messageActions.AbandonMessageAsync(message);
                 return;
             }
 
             await InsertCommunicationAsync(connectionString, comm);
 
-            _logger.LogInformation("Inserted Communication {Id} of type {Type}", comm.Id, comm.Type);
+            ServiceBusFunctionLog.InsertedCommunication(_logger, comm.Id, comm.Type);
             await messageActions.CompleteMessageAsync(message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error handling Service Bus message");
+            ServiceBusFunctionLog.ErrorHandling(_logger, ex);
             await messageActions.AbandonMessageAsync(message);
         }
     }
