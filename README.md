@@ -21,3 +21,10 @@ $env:Path = "$funcV4;$env:Path"
 func –version
 
 reboot vs
+
+
+À tester : 
+
+- Changer la structure du projet pour utiliser /src et /tests
+- Ajouter des essais unitaires et d'intégration
+- 
