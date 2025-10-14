@@ -1,6 +1,5 @@
 using Aspire.Hosting.Azure;
 using Azure.Messaging.ServiceBus;
-using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 using System.Text.Json;
 
@@ -11,16 +10,14 @@ public static class ServiceBusExtensions
     public static IResourceBuilder<AzureServiceBusQueueResource> WithTestCommands(
         this IResourceBuilder<AzureServiceBusQueueResource> builder)
     {
-        builder.ApplicationBuilder.Services.AddSingleton(provider =>
-        {
-            var connectionString = builder.Resource.Parent.ConnectionStringExpression
-                .GetValueAsync(CancellationToken.None).GetAwaiter().GetResult();
-            return new ServiceBusClient(connectionString);
-        });
-
         builder.WithCommand("SendSbMessage", "Send Service Bus message", executeCommand: async (c) =>
         {
-            var sbClient = c.ServiceProvider.GetRequiredService<ServiceBusClient>();
+            // Récupère la connexion une fois que la ressource est prête
+            var connectionString = await builder.Resource.Parent.ConnectionStringExpression
+                .GetValueAsync(c.CancellationToken);
+
+            await using var sbClient = new ServiceBusClient(connectionString);
+            await using var sender = sbClient.CreateSender(builder.Resource.QueueName);
 
             var payload = new
             {
@@ -39,8 +36,7 @@ public static class ServiceBusExtensions
                 CorrelationId = payload.Id.ToString()
             };
 
-            await sbClient.CreateSender(builder.Resource.QueueName)
-                .SendMessageAsync(message);
+            await sender.SendMessageAsync(message, c.CancellationToken);
 
             return new ExecuteCommandResult { Success = true };
         });
