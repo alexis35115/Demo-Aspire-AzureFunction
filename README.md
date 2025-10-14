@@ -25,6 +25,6 @@ reboot vs
 
 À tester : 
 
-- Changer la structure du projet pour utiliser /src et /tests
+- Se connecter à une BD
 - Ajouter des essais unitaires et d'intégration
-- 
+- Changer la structure du projet pour utiliser /src et /tests
