@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireApp.ServiceDefaults",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireApp.FunctionApp", "AspireApp.FunctionApp\AspireApp.FunctionApp.csproj", "{71DE7A46-EAEB-B8AF-8A1C-D23F2D6BD813}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireApp.DbMigrator", "AspireApp.DbMigrator\AspireApp.DbMigrator.csproj", "{98CC1C20-1B7B-42B1-F8D2-7ECDEE6C7F4B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{71DE7A46-EAEB-B8AF-8A1C-D23F2D6BD813}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71DE7A46-EAEB-B8AF-8A1C-D23F2D6BD813}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71DE7A46-EAEB-B8AF-8A1C-D23F2D6BD813}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98CC1C20-1B7B-42B1-F8D2-7ECDEE6C7F4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98CC1C20-1B7B-42B1-F8D2-7ECDEE6C7F4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98CC1C20-1B7B-42B1-F8D2-7ECDEE6C7F4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98CC1C20-1B7B-42B1-F8D2-7ECDEE6C7F4B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
