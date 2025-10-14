@@ -1,11 +1,8 @@
 using AspireApp.AppHost.Extensions;
-using Aspire.Hosting;
-using System.Data;
-using Microsoft.Data.SqlClient;
 
-IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
+var builder = DistributedApplication.CreateBuilder(args);
 
-IResourceBuilder<Aspire.Hosting.Azure.AzureServiceBusResource> serviceBus = builder
+var serviceBus = builder
     .AddAzureServiceBus("myservicebus")
     .RunAsEmulator(c => c
         .WithLifetime(ContainerLifetime.Persistent));

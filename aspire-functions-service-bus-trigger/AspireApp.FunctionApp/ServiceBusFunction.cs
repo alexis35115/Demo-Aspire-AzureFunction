@@ -1,10 +1,9 @@
-using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Data.SqlClient;
-using System.Collections.Generic;
+using System.Text.Json;
 
 namespace AspireApp.FunctionApp;
 

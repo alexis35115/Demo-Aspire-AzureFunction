@@ -1,8 +1,6 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 
-class Program
+internal class Program
 {
     private const string CreateTableSql = @"IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Communication]') AND type in (N'U'))
 BEGIN
@@ -16,14 +14,14 @@ BEGIN
     );
 END";
 
-    static async Task<int> Main(string[] args)
+    private static async Task<int> Main(string[] args)
     {
         try
         {
             var cs = Environment.GetEnvironmentVariable("ConnectionStrings__Communication");
             if (string.IsNullOrWhiteSpace(cs))
             {
-                Console.Error.WriteLine("Connection string 'Communication' not found in environment.");
+                await Console.Error.WriteLineAsync("Connection string 'Communication' not found in environment.");
                 return 2;
             }
 
@@ -37,7 +35,7 @@ END";
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Migration failed: {ex}");
+            await Console.Error.WriteLineAsync($"Migration failed: {ex}");
             return 1;
         }
     }

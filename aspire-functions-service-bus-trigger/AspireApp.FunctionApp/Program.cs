@@ -1,3 +1,4 @@
+using AspireApp.ServiceDefaults;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Extensions.Hosting;
 

@@ -1,8 +1,8 @@
-﻿using Aspire.Hosting.Azure;
+using Aspire.Hosting.Azure;
 using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
-using System.Text.Json;
 using System.Text;
+using System.Text.Json;
 
 namespace AspireApp.AppHost.Extensions;
 
@@ -20,7 +20,7 @@ public static class ServiceBusExtensions
 
         builder.WithCommand("SendSbMessage", "Send Service Bus message", executeCommand: async (c) =>
         {
-            ServiceBusClient sbClient = c.ServiceProvider.GetRequiredService<ServiceBusClient>();
+            var sbClient = c.ServiceProvider.GetRequiredService<ServiceBusClient>();
 
             var payload = new
             {
