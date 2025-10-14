@@ -29,3 +29,6 @@ reboot vs
 - Ajouter des essais unitaires et d'intégration
 - Changer la structure du projet pour utiliser /src et /tests
 - procédure d'accès à bd
+
+https://x.com/mjovanovictech/status/1978070113669517557
+https://www.milanjovanovic.tech/blog/messaging-made-easy-with-azure-service-bus?utm_source=X&utm_medium=social&utm_campaign=13.10.2025
