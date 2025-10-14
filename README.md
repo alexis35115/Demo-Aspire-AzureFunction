@@ -25,6 +25,7 @@ reboot vs
 
 À tester : 
 
+- Faciliter le processus de se connecter à une BD dans Aspire
 - Ajouter des essais unitaires et d'intégration
 - Changer la structure du projet pour utiliser /src et /tests
 - procédure d'accès à bd
