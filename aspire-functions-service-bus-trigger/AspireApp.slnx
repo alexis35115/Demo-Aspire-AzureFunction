@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Éléments de solution/">
+    <File Path=".editorconfig" />
+  </Folder>
   <Project Path="AspireApp.AppHost/AspireApp.AppHost.csproj" />
   <Project Path="AspireApp.DbMigrator/AspireApp.DbMigrator.csproj" />
   <Project Path="AspireApp.FunctionApp/AspireApp.FunctionApp.csproj" />
