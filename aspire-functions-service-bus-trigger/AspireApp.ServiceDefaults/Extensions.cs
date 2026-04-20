@@ -10,9 +10,9 @@ using OpenTelemetry.Trace;
 
 namespace AspireApp.ServiceDefaults;
 
-// Adds common .NET Aspire services: service discovery, resilience, health checks, and OpenTelemetry.
-// This project should be referenced by each service project in your solution.
-// To learn more about using this project, see https://aka.ms/dotnet/aspire/service-defaults
+// Ajoute les services .NET Aspire communs : découverte de services, résilience, vérifications de santé et OpenTelemetry.
+// Ce projet doit être référencé par chaque projet de service de votre solution.
+// Pour en savoir plus sur l'utilisation de ce projet, consultez https://aka.ms/dotnet/aspire/service-defaults
 public static class Extensions
 {
     public static TBuilder AddServiceDefaults<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
@@ -25,14 +25,14 @@ public static class Extensions
 
         builder.Services.ConfigureHttpClientDefaults(http =>
         {
-            // Turn on resilience by default
+            // Activer la résilience par défaut
             http.AddStandardResilienceHandler();
 
-            // Turn on service discovery by default
+            // Activer la découverte de services par défaut
             http.AddServiceDiscovery();
         });
 
-        // Uncomment the following to restrict the allowed schemes for service discovery.
+        // Décommenter ce qui suit pour restreindre les schémas autorisés pour la découverte de services.
         // builder.Services.Configure<ServiceDiscoveryOptions>(options =>
         // {
         //     options.AllowedSchemes = ["https"];
@@ -60,7 +60,7 @@ public static class Extensions
             {
                 tracing.AddSource(builder.Environment.ApplicationName)
                     .AddAspNetCoreInstrumentation()
-                    // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
+                    // Décommenter la ligne suivante pour activer l'instrumentation gRPC (nécessite le package OpenTelemetry.Instrumentation.GrpcNetClient)
                     //.AddGrpcClientInstrumentation()
                     .AddHttpClientInstrumentation();
             });
@@ -79,7 +79,7 @@ public static class Extensions
             builder.Services.AddOpenTelemetry().UseOtlpExporter();
         }
 
-        // Uncomment the following lines to enable the Azure Monitor exporter (requires the Azure.Monitor.OpenTelemetry.AspNetCore package)
+        // Décommenter les lignes suivantes pour activer l'exportateur Azure Monitor (nécessite le package Azure.Monitor.OpenTelemetry.AspNetCore)
         //if (!string.IsNullOrEmpty(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
         //{
         //    builder.Services.AddOpenTelemetry()
@@ -92,7 +92,7 @@ public static class Extensions
     public static TBuilder AddDefaultHealthChecks<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
         builder.Services.AddHealthChecks()
-            // Add a default liveness check to ensure app is responsive
+            // Ajouter une vérification de vivacité par défaut pour s'assurer que l'application répond
             .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
 
         return builder;
@@ -100,14 +100,14 @@ public static class Extensions
 
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
-        // Adding health checks endpoints to applications in non-development environments has security implications.
-        // See https://aka.ms/dotnet/aspire/healthchecks for details before enabling these endpoints in non-development environments.
+        // L'ajout de points de terminaison de vérification de santé dans des environnements hors développement a des implications en matière de sécurité.
+        // Consultez https://aka.ms/dotnet/aspire/healthchecks pour plus de détails avant d'activer ces points de terminaison hors développement.
         if (app.Environment.IsDevelopment())
         {
-            // All health checks must pass for app to be considered ready to accept traffic after starting
+            // Toutes les vérifications de santé doivent réussir pour que l'application soit prête à accepter du trafic après le démarrage
             app.MapHealthChecks("/health");
 
-            // Only health checks tagged with the "live" tag must pass for app to be considered alive
+            // Seules les vérifications de santé marquées avec le tag "live" doivent réussir pour que l'application soit considérée comme vivante
             app.MapHealthChecks("/alive", new HealthCheckOptions
             {
                 Predicate = r => r.Tags.Contains("live")
