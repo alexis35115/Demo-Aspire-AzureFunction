@@ -1,4 +1,4 @@
-# Demo Aspire — Azure Functions avec Service Bus
+﻿# Demo Aspire — Azure Functions avec Service Bus
 
 Démonstration d'une application [.NET Aspire](https://learn.microsoft.com/dotnet/aspire/get-started/aspire-overview) orchestrant une **Azure Function** déclenchée par **Azure Service Bus**, avec persistance des messages dans une base de données **SQL Server**.
 
@@ -6,6 +6,7 @@ Démonstration d'une application [.NET Aspire](https://learn.microsoft.com/dotne
 
 - [Architecture](#architecture)
 - [Prérequis](#prérequis)
+- [Outils et émulateurs de développement](#outils-et-émulateurs-de-développement)
 - [Structure de la solution](#structure-de-la-solution)
 - [Démarrage rapide](#démarrage-rapide)
 - [Tester l'envoi d'un message](#tester-lenvoi-dun-message)
@@ -51,6 +52,8 @@ Le flux est le suivant :
 
 ## Prérequis
 
+### Outils à installer manuellement
+
 | Outil | Version minimale | Lien |
 |---|---|---|
 | .NET SDK | 9.0 | https://dotnet.microsoft.com/download |
@@ -59,7 +62,76 @@ Le flux est le suivant :
 | Azure Functions Core Tools | 4.x | https://learn.microsoft.com/azure/azure-functions/functions-run-local |
 | Visual Studio | 2022 17.12+ ou 2026 | https://visualstudio.microsoft.com |
 
-> **Docker est obligatoire** : l'émulateur Service Bus et le conteneur SQL Server s'exécutent tous les deux dans Docker.
+> **Docker est obligatoire** : tous les émulateurs et conteneurs de cette solution sont orchestrés par .NET Aspire et démarrés automatiquement via Docker.
+
+### Vérifier les prérequis
+
+```powershell
+# Vérifier .NET 9
+dotnet --version
+
+# Vérifier le workload Aspire
+dotnet workload list
+
+# Vérifier Azure Functions Core Tools
+func --version
+
+# Vérifier Docker
+docker --version
+docker info
+```
+
+---
+
+## Outils et émulateurs de développement
+
+Cette solution utilise plusieurs émulateurs locaux pour reproduire l'environnement Azure **sans dépendre de ressources cloud**. Ils sont tous gérés automatiquement par .NET Aspire au démarrage — aucune configuration manuelle n'est requise.
+
+### Azure Service Bus Emulator
+
+| Propriété | Valeur |
+|---|---|
+| Image Docker | `mcr.microsoft.com/azure-messaging/servicebus-emulator` |
+| Géré par | `Aspire.Hosting.Azure.ServiceBus` avec `.RunAsEmulator()` |
+| Persistance | Activée (`ContainerLifetime.Persistent`) |
+| File configurée | `myqueue` |
+
+L'émulateur Service Bus reproduit fidèlement le comportement d'Azure Service Bus en local. La persistance est activée : le conteneur Docker n'est pas recréé à chaque redémarrage d'Aspire, ce qui conserve les messages non consommés entre les sessions.
+
+> L'émulateur Service Bus requiert **Azurite** pour son stockage interne. Aspire démarre Azurite automatiquement en tant que dépendance.
+
+### Azurite (émulateur Azure Storage)
+
+| Propriété | Valeur |
+|---|---|
+| Image Docker | `mcr.microsoft.com/azure-storage/azurite` |
+| Géré par | Aspire, en tant que dépendance de l'émulateur Service Bus et des Azure Functions |
+| Services émulés | Blob, Queue, Table |
+
+Azurite émule les services de stockage Azure. Il est utilisé à deux endroits :
+- Par l'**émulateur Service Bus** pour son stockage interne.
+- Par le **runtime Azure Functions v4**, qui requiert un compte de stockage pour la coordination de l'hôte (`AzureWebJobsStorage`).
+
+### SQL Server (conteneur)
+
+| Propriété | Valeur |
+|---|---|
+| Image Docker | `mcr.microsoft.com/mssql/server` |
+| Géré par | `Aspire.Hosting.SqlServer` |
+| Base de données | `Communication` |
+| Authentification | Compte SA avec mot de passe via secret Aspire (`sql-sa-password`) |
+
+Le conteneur SQL Server est provisionné par Aspire. La base de données `Communication` et son schéma sont créés automatiquement au démarrage par le projet **DbMigrator**.
+
+### Résumé des conteneurs Docker
+
+Au démarrage, Aspire orchestre automatiquement les conteneurs suivants :
+
+| Conteneur | Image | Rôle |
+|---|---|---|
+| Service Bus Emulator | `mcr.microsoft.com/azure-messaging/servicebus-emulator` | Broker de messages |
+| Azurite | `mcr.microsoft.com/azure-storage/azurite` | Stockage local pour Service Bus et Functions |
+| SQL Server | `mcr.microsoft.com/mssql/server` | Base de données relationnelle |
 
 ---
 
@@ -116,10 +188,11 @@ dotnet run --project AspireApp.AppHost
 
 Aspire démarre automatiquement dans l'ordre :
 
-1. Le conteneur **Service Bus** (émulateur)
-2. Le conteneur **SQL Server**
-3. Le projet **DbMigrator** (création de la table)
-4. La **Azure Function** (une fois la BD prête)
+1. Le conteneur **Azurite** (stockage local)
+2. Le conteneur **Service Bus** (émulateur)
+3. Le conteneur **SQL Server**
+4. Le projet **DbMigrator** (création de la table)
+5. La **Azure Function** (une fois la BD prête)
 
 Le tableau de bord Aspire s'ouvre dans le navigateur à l'adresse indiquée dans la console (généralement `https://localhost:15888`).
 
