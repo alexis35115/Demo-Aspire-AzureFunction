@@ -10,7 +10,7 @@ public static class ServiceBusExtensions
     public static IResourceBuilder<AzureServiceBusQueueResource> WithTestCommands(
         this IResourceBuilder<AzureServiceBusQueueResource> builder)
     {
-        builder.WithCommand("SendSbMessage", "Send Service Bus message", executeCommand: async (c) =>
+        builder.WithCommand("SendSbMessage", "Déposer un message dans la Queue", executeCommand: async (c) =>
         {
             // Récupère la connexion une fois que la ressource est prête
             var connectionString = await builder.Resource.Parent.ConnectionStringExpression
