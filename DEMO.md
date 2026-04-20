@@ -1,4 +1,4 @@
-﻿# Plan de démonstration — Demo Aspire Azure Functions avec Service Bus
+﻿# Plan de démonstration - Demo Aspire Azure Functions avec Service Bus
 
 ## Objectif de la démonstration
 
@@ -22,7 +22,7 @@ Vérifier que tout est prêt **avant** de commencer :
 
 ## Déroulement de la démonstration
 
-### Étape 1 — Présentation du contexte (3 min)
+### Étape 1 - Présentation du contexte (3 min)
 
 **À expliquer :**
 
@@ -32,7 +32,7 @@ Vérifier que tout est prêt **avant** de commencer :
 
 ---
 
-### Étape 2 — Tour de la solution (5 min)
+### Étape 2 - Tour de la solution (5 min)
 
 **Ouvrir et commenter les fichiers suivants dans Visual Studio :**
 
@@ -72,7 +72,7 @@ Points à souligner :
 
 ---
 
-### Étape 3 — Démarrage et tableau de bord Aspire (3 min)
+### Étape 3 - Démarrage et tableau de bord Aspire (3 min)
 
 **Lancer la solution depuis Visual Studio** (F5 ou `dotnet run --project AspireApp.AppHost`).
 
@@ -91,7 +91,7 @@ Observer dans la console l'ordre de démarrage :
 
 ---
 
-### Étape 4 — Envoi d'un message et observation (4 min)
+### Étape 4 - Envoi d'un message et observation (4 min)
 
 1. Dans le tableau de bord, naviguer vers la ressource **`myqueue`**.
 2. Cliquer sur **« Déposer un message dans la Queue »**.
@@ -113,7 +113,7 @@ Observer dans la console l'ordre de démarrage :
 
 ---
 
-### Étape 5 — Exploration des journaux et traces (3 min)
+### Étape 5 - Exploration des journaux et traces (3 min)
 
 **Dans le tableau de bord Aspire :**
 
