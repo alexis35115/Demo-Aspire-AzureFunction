@@ -1,6 +1,6 @@
 ﻿# Demo Aspire — Azure Functions avec Service Bus
 
-Démonstration d'une application [.NET Aspire](https://learn.microsoft.com/dotnet/aspire/get-started/aspire-overview) orchestrant une **Azure Function** déclenchée par **Azure Service Bus**, avec persistance des messages dans une base de données **SQL Server**.
+Démonstration d'une application [Aspire](https://learn.microsoft.com/dotnet/aspire/get-started/aspire-overview) orchestrant une **Azure Function** déclenchée par **Azure Service Bus**, avec persistance des messages dans une base de données **SQL Server**.
 
 ## Table des matières
 
@@ -17,7 +17,7 @@ Démonstration d'une application [.NET Aspire](https://learn.microsoft.com/dotne
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    .NET Aspire AppHost                  │
+│                    Aspire AppHost                  │
 │                                                         │
 │  ┌──────────────────┐      ┌──────────────────────────┐ │
 │  │  Service Bus     │      │  SQL Server              │ │
@@ -57,12 +57,12 @@ Le flux est le suivant :
 | Outil | Version minimale | Lien |
 |---|---|---|
 | .NET SDK | 9.0 | https://dotnet.microsoft.com/download |
-| .NET Aspire workload | 9.x | `dotnet workload install aspire` |
+| Aspire workload | 9.x | `dotnet workload install aspire` |
 | Docker Desktop | Dernière version stable | https://www.docker.com/products/docker-desktop |
 | Azure Functions Core Tools | 4.x | https://learn.microsoft.com/azure/azure-functions/functions-run-local |
 | Visual Studio | 2022 17.12+ ou 2026 | https://visualstudio.microsoft.com |
 
-> **Docker est obligatoire** : tous les émulateurs et conteneurs de cette solution sont orchestrés par .NET Aspire et démarrés automatiquement via Docker.
+> **Docker est obligatoire** : tous les émulateurs et conteneurs de cette solution sont orchestrés par Aspire et démarrés automatiquement via Docker.
 
 ### Vérifier les prérequis
 
@@ -85,7 +85,7 @@ docker info
 
 ## Outils et émulateurs de développement
 
-Cette solution utilise plusieurs émulateurs locaux pour reproduire l'environnement Azure **sans dépendre de ressources cloud**. Ils sont tous gérés automatiquement par .NET Aspire au démarrage — aucune configuration manuelle n'est requise.
+Cette solution utilise plusieurs émulateurs locaux pour reproduire l'environnement Azure **sans dépendre de ressources cloud**. Ils sont tous gérés automatiquement par Aspire au démarrage — aucune configuration manuelle n'est requise.
 
 ### Azure Service Bus Emulator
 
@@ -139,7 +139,7 @@ Au démarrage, Aspire orchestre automatiquement les conteneurs suivants :
 
 ```
 aspire-functions-service-bus-trigger/
-├── AspireApp.AppHost/                  # Orchestrateur .NET Aspire
+├── AspireApp.AppHost/                  # Orchestrateur Aspire
 │   ├── Program.cs                      # Déclaration de toutes les ressources
 │   └── Extensions/
 │       └── ServiceBusExtensions.cs     # Commande de test "Send Service Bus message"
