@@ -1,4 +1,4 @@
-﻿# Demo Aspire — Azure Functions avec Service Bus
+﻿# Demo Aspire - Azure Functions avec Service Bus
 
 Démonstration d'une application [Aspire](https://learn.microsoft.com/dotnet/aspire/get-started/aspire-overview) orchestrant une **Azure Function** déclenchée par **Azure Service Bus**, avec persistance des messages dans une base de données **SQL Server**.
 
@@ -85,7 +85,7 @@ docker info
 
 ## Outils et émulateurs de développement
 
-Cette solution utilise plusieurs émulateurs locaux pour reproduire l'environnement Azure **sans dépendre de ressources cloud**. Ils sont tous gérés automatiquement par Aspire au démarrage — aucune configuration manuelle n'est requise.
+Cette solution utilise plusieurs émulateurs locaux pour reproduire l'environnement Azure **sans dépendre de ressources cloud**. Ils sont tous gérés automatiquement par Aspire au démarrage - aucune configuration manuelle n'est requise.
 
 ### Azure Service Bus Emulator
 
@@ -144,10 +144,10 @@ aspire-functions-service-bus-trigger/
 │   └── Extensions/
 │       └── ServiceBusExtensions.cs     # Commande de test "Send Service Bus message"
 │
-├── AspireApp.ServiceDefaults/          # Configuration partagée (OpenTelemetry, health checks…)
+├── AspireApp.ServiceDefaults/          # Configuration partagée (OpenTelemetry, health checks...)
 │   └── Extensions.cs
 │
-├── AspireApp.DbMigrator/               # Projet console — migration de la base de données
+├── AspireApp.DbMigrator/               # Projet console - migration de la base de données
 │   └── Program.cs                      # Crée la table [dbo].[Communication] au démarrage
 │
 └── AspireApp.FunctionApp/              # Azure Function
