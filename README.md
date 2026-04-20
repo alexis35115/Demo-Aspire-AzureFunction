@@ -1,34 +1,149 @@
-# Demo-Aspire-AzureFunction
+# Demo Aspire — Azure Functions avec Service Bus
 
-Démo de Azure Functions, Azure Service Bus, Azurite avec .NET Aspire
+Démonstration d'une application [.NET Aspire](https://learn.microsoft.com/dotnet/aspire/get-started/aspire-overview) orchestrant une **Azure Function** déclenchée par **Azure Service Bus**, avec persistance des messages dans une base de données **SQL Server**.
 
-TODO: à mettre au propre
+## Table des matières
 
-Avoir docker
+- [Architecture](#architecture)
+- [Prérequis](#prérequis)
+- [Structure de la solution](#structure-de-la-solution)
+- [Démarrage rapide](#démarrage-rapide)
+- [Tester l'envoi d'un message](#tester-lenvoi-dun-message)
 
-https://github.com/mawax/aspire-demos/tree/main/aspire-functions-service-bus-trigger
+---
 
-https://www.wagemakers.net/posts/aspire-functions-service-bus/#:~:text=In%20this%20quick%20post%20we%20will%20look%20at,Aspire%20Dashboard%20custom%20command%20to%20test%20the%20trigger.
+## Architecture
 
-https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=windows%2Cisolated-process%2Cnode-v4%2Cpython-v2%2Chttp-trigger%2Ccontainer-apps&pivots=programming-language-csharp
+```
+┌─────────────────────────────────────────────────────────┐
+│                    .NET Aspire AppHost                  │
+│                                                         │
+│  ┌──────────────────┐      ┌──────────────────────────┐ │
+│  │  Service Bus     │      │  SQL Server              │ │
+│  │  (émulateur)     │      │  Base : Communication    │ │
+│  │  File : myqueue  │      │                          │ │
+│  └────────┬─────────┘      └────────────┬─────────────┘ │
+│           │                             │               │
+│           │          ┌──────────────────┴─────────┐     │
+│           │          │  DbMigrator                │     │
+│           │          │  (crée la table au boot)   │     │
+│           │          └────────────────────────────┘     │
+│           │                             │               │
+│           └──────────────┬──────────────┘               │
+│                          │                              │
+│                ┌─────────▼──────────┐                   │
+│                │  Azure Function    │                   │
+│                │  (ServiceBusTrigger│                   │
+│                │   → INSERT en BD)  │                   │
+│                └────────────────────┘                   │
+└─────────────────────────────────────────────────────────┘
+```
 
-Ajouter dans le path
+Le flux est le suivant :
 
-Get-Command func | Select-Object -ExpandProperty Source
+1. Un message JSON est déposé dans la file `myqueue`.
+2. La **Azure Function** est déclenchée automatiquement.
+3. Le message est désérialisé en un objet `Communication`.
+4. L'objet est inséré dans la table `[dbo].[Communication]` de SQL Server.
+5. En cas d'erreur de désérialisation, le message est envoyé en **dead-letter**. En cas d'autre erreur, il est abandonné.
 
-$funcV4 = "C:\Program Files\Microsoft\Azure Functions Core Tools"
-$env:Path = "$funcV4;$env:Path"
-func –version
+---
 
-reboot vs
+## Prérequis
 
+| Outil | Version minimale | Lien |
+|---|---|---|
+| .NET SDK | 9.0 | https://dotnet.microsoft.com/download |
+| .NET Aspire workload | 9.x | `dotnet workload install aspire` |
+| Docker Desktop | Dernière version stable | https://www.docker.com/products/docker-desktop |
+| Azure Functions Core Tools | 4.x | https://learn.microsoft.com/azure/azure-functions/functions-run-local |
+| Visual Studio | 2022 17.12+ ou 2026 | https://visualstudio.microsoft.com |
 
-À tester : 
+> **Docker est obligatoire** : l'émulateur Service Bus et le conteneur SQL Server s'exécutent tous les deux dans Docker.
 
-- Faciliter le processus de se connecter à une BD dans Aspire
-- Ajouter des essais unitaires et d'intégration
-- Changer la structure du projet pour utiliser /src et /tests
-- procédure d'accès à bd
+---
 
-https://x.com/mjovanovictech/status/1978070113669517557
-https://www.milanjovanovic.tech/blog/messaging-made-easy-with-azure-service-bus?utm_source=X&utm_medium=social&utm_campaign=13.10.2025
+## Structure de la solution
+
+```
+aspire-functions-service-bus-trigger/
+├── AspireApp.AppHost/                  # Orchestrateur .NET Aspire
+│   ├── Program.cs                      # Déclaration de toutes les ressources
+│   └── Extensions/
+│       └── ServiceBusExtensions.cs     # Commande de test "Send Service Bus message"
+│
+├── AspireApp.ServiceDefaults/          # Configuration partagée (OpenTelemetry, health checks…)
+│   └── Extensions.cs
+│
+├── AspireApp.DbMigrator/               # Projet console — migration de la base de données
+│   └── Program.cs                      # Crée la table [dbo].[Communication] au démarrage
+│
+└── AspireApp.FunctionApp/              # Azure Function
+    ├── Program.cs                      # Configuration du host
+    └── ServiceBusFunction.cs           # Trigger Service Bus + insertion SQL
+```
+
+### Ressources Aspire orchestrées
+
+| Ressource | Type | Description |
+|---|---|---|
+| `myservicebus` | Azure Service Bus (émulateur) | Broker de messages, persistance activée |
+| `myqueue` | File Service Bus | File d'attente consommée par la Function |
+| `sql` | SQL Server (conteneur) | Base de données relationnelle |
+| `Communication` | Base de données SQL | Stockage des messages traités |
+| `dbmigrator` | Projet console | Crée le schéma avant le démarrage de la Function |
+| `functionapp` | Azure Functions | Traitement des messages entrants |
+
+---
+
+## Démarrage rapide
+
+### 1. Configurer le mot de passe SQL Server
+
+Le mot de passe SA de SQL Server est injecté via un paramètre secret Aspire. Créez le secret en local :
+
+```powershell
+dotnet user-secrets --project AspireApp.AppHost set "Parameters:sql-sa-password" "VotreMotDePasse123!"
+```
+
+> Le mot de passe doit respecter la politique de complexité SQL Server (majuscule, minuscule, chiffre, caractère spécial, 8 caractères minimum).
+
+### 2. Lancer la solution
+
+```powershell
+dotnet run --project AspireApp.AppHost
+```
+
+Aspire démarre automatiquement dans l'ordre :
+
+1. Le conteneur **Service Bus** (émulateur)
+2. Le conteneur **SQL Server**
+3. Le projet **DbMigrator** (création de la table)
+4. La **Azure Function** (une fois la BD prête)
+
+Le tableau de bord Aspire s'ouvre dans le navigateur à l'adresse indiquée dans la console (généralement `https://localhost:15888`).
+
+---
+
+## Tester l'envoi d'un message
+
+Une commande de test est intégrée directement dans le tableau de bord Aspire :
+
+1. Ouvrir le tableau de bord Aspire.
+2. Naviguer vers la ressource **`myqueue`**.
+3. Cliquer sur **« Send Service Bus message »**.
+
+Un message JSON de la forme suivante est envoyé :
+
+```json
+{
+  "Id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "Type": "Email",
+  "Destination": "user@example.com",
+  "Subject": "Welcome",
+  "Body": "Hello from Aspire!",
+  "RequestedAtUtc": "2025-01-01T00:00:00+00:00"
+}
+```
+
+La Function est déclenchée et insère l'enregistrement dans la table `[dbo].[Communication]`. Le résultat est visible dans les journaux de la ressource `functionapp` du tableau de bord.
