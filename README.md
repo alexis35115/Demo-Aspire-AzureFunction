@@ -17,7 +17,7 @@ Démonstration d'une application [Aspire](https://learn.microsoft.com/dotnet/asp
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    Aspire AppHost                  │
+│                    Aspire AppHost                       │
 │                                                         │
 │  ┌──────────────────┐      ┌──────────────────────────┐ │
 │  │  Service Bus     │      │  SQL Server              │ │
